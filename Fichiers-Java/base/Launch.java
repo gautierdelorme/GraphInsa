@@ -88,7 +88,8 @@ public class Launch {
 		case 5 :
 		    String nom_chemin = this.readarg.lireString ("Nom du fichier .path contenant le chemin ? ") ;
 		    Chemin c = graphe.verifierChemin(Openfile.open (nom_chemin), nom_chemin) ;
-                    graphe.printChemin(c);
+            graphe.printChemin(c);
+            //graphe.drawChemin(c);
 		    break ;
 
 		default:

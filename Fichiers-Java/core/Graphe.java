@@ -12,7 +12,7 @@ import java.util.*;
 public class Graphe {
 
     // Nom de la carte utilisee pour construire ce graphe
-    private final String nomCarte ;
+    //private final String nomCarte ;
 
     // Fenetre graphique
     private final Dessin dessin ;
@@ -41,11 +41,14 @@ public class Graphe {
     // Deux malheureux getters.
     public Dessin getDessin() { return dessin ; }
     public int getZone() { return numzone ; }
+    
+    public Noeud[] getNoeuds() { return noeuds; }
+    public ArrayList<Route> getRoutes() { return routes; }
 
     // Le constructeur cree le graphe en lisant les donnees depuis le DataInputStream
     public Graphe (String nomCarte, DataInputStream dis, Dessin dessin) {
 
-	this.nomCarte = nomCarte ;
+	//this.nomCarte = nomCarte ;
 	this.dessin = dessin ;
 	Utils.calibrer(nomCarte, dessin) ;
 	
@@ -177,7 +180,9 @@ public class Graphe {
     public void printChemin(Chemin c) {
         System.out.println("cout distance : "+c.coutDistance());
         System.out.println("cout temps : "+c.coutTemps());
+        c.trace(dessin);
     }
+    
     // Rayon de la terre en metres
     private static final double rayon_terre = 6378137.0 ;
 
@@ -203,8 +208,6 @@ public class Graphe {
      *  Ne pas utiliser automatiquement a chaque invocation des algorithmes.
      */
     public void situerClick() {
-            Chemin c = new Chemin();
-
 	System.out.println("Allez-y, cliquez donc.") ;
 	
 	if (dessin.waitClick()) {
@@ -281,13 +284,12 @@ public class Graphe {
 		    System.out.println("Le chemin " + nom_chemin + " ne termine pas sur le bon noeud.") ;
 		    System.exit(1) ;
 		}
+	    return c;
 	} catch (IOException e) {
 	    e.printStackTrace() ;
 	    System.exit(1) ;
-	} finally {
-            return c;
-        }
-
+	    return null;
+	}
     }
 
 }

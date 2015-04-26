@@ -4,7 +4,6 @@ package core ;
  *   Classe representant un noeud.
  */
 
-import base.* ;
 import java.util.*;
 
 public class Noeud {
@@ -39,7 +38,7 @@ public class Noeud {
         return routes;
     }
     
-    public float getId() {
+    public int getId() {
         return id;
     }
 
@@ -76,4 +75,9 @@ public class Noeud {
     public void setNbSuccesseurs(int nbSuccesseurs) {
         this.nbSuccesseurs = nbSuccesseurs;
     }
+
+	@Override
+	public String toString() {
+		return "id=" + id;
+	}
 }

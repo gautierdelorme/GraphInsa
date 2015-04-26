@@ -4,7 +4,10 @@
  */
 package core;
 
+import java.awt.Color;
 import java.util.ArrayList;
+
+import base.Dessin;
 
 /**
  *
@@ -21,13 +24,23 @@ public class Chemin {
         noeuds.add(n);
     }
     
+    public void addNoeudFirst(Noeud n) {
+        noeuds.add(0,n);
+    }
+    
     public int coutDistance() {
         int returnCout = 0;
-        for (int i = 0; i < noeuds.size()-1; i++) {
+        for (int i = 0; i < noeuds.size()-1; i++) {            
+            int min = Integer.MAX_VALUE;
+            Route rMin = null;
             for (Route r : noeuds.get(i).getRoutes()) {
-                if (r.getDestination() == noeuds.get(i+1)) {
-                    returnCout += r.getDistance();
+                if (r.getDestination() == noeuds.get(i+1) && r.getDistance() < min) {
+                   min = r.getDistance();
+                   rMin = r;
                 }
+            }
+            if (rMin != null) {
+                returnCout += rMin.getDistance();
             }
         }
         return returnCout;
@@ -49,5 +62,22 @@ public class Chemin {
             }
         }
         return returnCout;
+    }
+    
+    public void trace(Dessin dessin) {
+    	for (int i = 0; i < noeuds.size()-1; i++) {            
+            int min = Integer.MAX_VALUE;
+            Route rMin = null;
+            for (Route r : noeuds.get(i).getRoutes()) {
+                if (r.getDestination() == noeuds.get(i+1) && r.getDistance() < min) {
+                   min = r.getDistance();
+                   rMin = r;
+                }
+            }
+            if (rMin != null) {
+            	dessin.setColor(Color.blue);
+            	dessin.drawLine(rMin.getSource().getLongitude(), rMin.getSource().getLatitude(), rMin.getDestination().getLongitude(), rMin.getDestination().getLatitude());
+            }
+        }
     }
 }

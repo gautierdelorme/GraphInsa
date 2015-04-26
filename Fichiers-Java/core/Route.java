@@ -100,4 +100,9 @@ public class Route {
     public void setNbSegments(int nbSegments) {
         this.nbSegments = nbSegments;
     }
+
+	@Override
+	public String toString() {
+		return "source: "+source.getId()+", destination: " + destination.getId() + ", distance: " + distance;
+	}
 }
