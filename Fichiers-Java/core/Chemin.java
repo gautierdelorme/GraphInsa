@@ -35,7 +35,7 @@ public class Chemin {
             Route rMin = null;
             for (Route r : noeuds.get(i).getRoutes()) {
                 if (r.getDestination() == noeuds.get(i+1) && r.getDistance() < min) {
-                   min = r.getDistance();
+                   min = (int)r.getDistance();
                    rMin = r;
                 }
             }
@@ -53,7 +53,7 @@ public class Chemin {
             Route rMin = null;
             for (Route r : noeuds.get(i).getRoutes()) {
                 if (r.getDestination() == noeuds.get(i+1) && r.getDistance() < min) {
-                   min = r.getDistance();
+                   min = (int)r.getDistance();
                    rMin = r;
                 }
             }
@@ -70,7 +70,7 @@ public class Chemin {
             Route rMin = null;
             for (Route r : noeuds.get(i).getRoutes()) {
                 if (r.getDestination() == noeuds.get(i+1) && r.getDistance() < min) {
-                   min = r.getDistance();
+                   min = (int)r.getDistance();
                    rMin = r;
                 }
             }

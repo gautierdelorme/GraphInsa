@@ -3,16 +3,18 @@ package core;
 public class Label implements Comparable<Label> {
 
 	private boolean marquage;
-	private int cout;
+	private float cout;
+	private float estimation;
 	private Noeud pere;
 	private Noeud courant;
 	
-	public Label(boolean marquage, int cout, Noeud pere, Noeud courant) {
+	public Label(boolean marquage, float cout, float estimation, Noeud pere, Noeud courant) {
 		super();
 		this.marquage = marquage;
 		this.cout = cout;
 		this.pere = pere;
 		this.courant = courant;
+		this.estimation = estimation;
 	}
 	
 	
@@ -29,14 +31,23 @@ public class Label implements Comparable<Label> {
 
 
 
-	public int getCout() {
+	public float getCout() {
 		return cout;
 	}
 
 
-
-	public void setCout(int cout) {
+	public void setCout(float cout) {
 		this.cout = cout;
+	}
+	
+	public float getEstimation() {
+		return estimation;
+	}
+
+
+
+	public void setEstimation(float estimation) {
+		this.estimation = estimation;
 	}
 
 
@@ -67,8 +78,8 @@ public class Label implements Comparable<Label> {
 
 	@Override
 	public int compareTo(Label label) {
-		Integer int1 = new Integer(cout);
-		Integer int2 = new Integer(label.cout);
+		Double int1 = new Double(cout+estimation);
+		Double int2 = new Double(label.cout+label.estimation);
 		return int1.compareTo(int2);
 	}
 	

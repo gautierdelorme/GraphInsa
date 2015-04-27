@@ -15,13 +15,13 @@ public class Route {
     private Descripteur descripteur;
     private Noeud source;
     private Noeud destination;
-    private int distance;
+    private float distance;
     private int nbSegments;
     
     public static int nbRoutes = 0;
     public static int lgTotale = 0;
     
-    public Route (Noeud source, Noeud destination, int distance, int nbSegments, Descripteur descripteur){
+    public Route (Noeud source, Noeud destination, float distance, int nbSegments, Descripteur descripteur){
         this.descripteur = descripteur;
         this.source = source;
         this.destination = destination;
@@ -76,14 +76,14 @@ public class Route {
     /**
      * @return the distance
      */
-    public int getDistance() {
+    public float getDistance() {
         return distance;
     }
 
     /**
      * @param distance the distance to set
      */
-    public void setDistance(int distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 

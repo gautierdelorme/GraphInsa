@@ -6,7 +6,9 @@ package core ;
  */
 
 import java.io.* ;
+
 import base.* ;
+
 import java.util.*;
 
 public class Graphe {
@@ -36,13 +38,13 @@ public class Graphe {
      * Vous devez modifier et ameliorer ce choix de conception simpliste.
      */
     private ArrayList<Route> routes ;
-    private Noeud[] noeuds ;
+    private ArrayList<Noeud> noeuds ;
 
     // Deux malheureux getters.
     public Dessin getDessin() { return dessin ; }
     public int getZone() { return numzone ; }
     
-    public Noeud[] getNoeuds() { return noeuds; }
+    public ArrayList<Noeud> getNoeuds() { return noeuds; }
     public ArrayList<Route> getRoutes() { return routes; }
 
     // Le constructeur cree le graphe en lisant les donnees depuis le DataInputStream
@@ -76,7 +78,7 @@ public class Graphe {
 	    Descripteur[] descripteurs = new Descripteur[nb_descripteurs] ;
 	    
 	    // En fonction de vos choix de conception, vous devrez certainement adapter la suite.
-            this.noeuds = new Noeud[nb_nodes];
+            this.noeuds = new ArrayList<Noeud>() ;//new Noeud[nb_nodes];
 	    this.routes = new ArrayList<Route>();
             
             // Nombre de successeurs enregistrÃ©s dans le fichier.
@@ -85,8 +87,8 @@ public class Graphe {
 	    // Lecture des noeuds
 	    for (int num_node = 0 ; num_node < nb_nodes ; num_node++) {
 		// Lecture du noeud numero num_node
-                noeuds[num_node] = new Noeud(num_node,((float)dis.readInt ()) / 1E6f, ((float)dis.readInt ()) / 1E6f, dis.readUnsignedByte());
-                nsuccesseurs_a_lire[num_node] = noeuds[num_node].getNbSuccesseurs() ;
+                noeuds.add(new Noeud(num_node,((float)dis.readInt ()) / 1E6f, ((float)dis.readInt ()) / 1E6f, dis.readUnsignedByte()));
+                nsuccesseurs_a_lire[num_node] = noeuds.get(num_node).getNbSuccesseurs() ;
 	    }
 	    
 	    Utils.checkByte(255, dis) ;
@@ -123,18 +125,18 @@ public class Graphe {
 		    int nb_segm   = dis.readUnsignedShort() ;
 
 		    edges++ ;
-                    
-                    Route r = new Route(noeuds[num_node],noeuds[dest_node], longueur, nb_segm, descripteurs[descr_num]);
+		    if (succ_zone == numzone) {
+                    Route r = new Route(noeuds.get(num_node),noeuds.get(dest_node), longueur, nb_segm, descripteurs[descr_num]);
                     routes.add(r);
-                    noeuds[num_node].addRoute(r);
+                    noeuds.get(num_node).addRoute(r);
                     if (!descripteurs[descr_num].isSensUnique()) {
-                            noeuds[dest_node].setNbSuccesseurs(noeuds[dest_node].getNbSuccesseurs()+1);
-                            noeuds[dest_node].addRoute(new Route(noeuds[dest_node],noeuds[num_node], longueur, nb_segm, descripteurs[descr_num]));
+                            noeuds.get(dest_node).setNbSuccesseurs(noeuds.get(dest_node).getNbSuccesseurs()+1);
+                            noeuds.get(dest_node).addRoute(new Route(noeuds.get(dest_node),noeuds.get(num_node), longueur, nb_segm, descripteurs[descr_num]));
                     }
 		    Couleur.set(dessin, descripteurs[descr_num].getType()) ;
 
-		    float current_long = noeuds[num_node].getLongitude() ;
-		    float current_lat  = noeuds[num_node].getLatitude() ;
+		    float current_long = noeuds.get(num_node).getLongitude() ;
+		    float current_lat  = noeuds.get(num_node).getLatitude() ;
 
 		    // Chaque segment est dessine'
 		    for (int i = 0 ; i < nb_segm ; i++) {
@@ -148,7 +150,8 @@ public class Graphe {
 		    // Le dernier trait rejoint le sommet destination.
 		    // On le dessine si le noeud destination est dans la zone du graphe courant.
 		    if (succ_zone == numzone) {
-			dessin.drawLine(current_long, current_lat, noeuds[dest_node].getLongitude(), noeuds[dest_node].getLatitude()) ;
+			dessin.drawLine(current_long, current_lat, noeuds.get(dest_node).getLongitude(), noeuds.get(dest_node).getLatitude()) ;
+		    }
 		    }
 		}
 	    }
@@ -220,9 +223,9 @@ public class Graphe {
 	    float minDist = Float.MAX_VALUE ;
 	    int   noeud   = 0 ;
 	    
-	    for (int num_node = 0 ; num_node < noeuds.length ; num_node++) {
-		float londiff = (noeuds[num_node].getLongitude() - lon) ;
-		float latdiff = (noeuds[num_node].getLatitude() - lat) ;
+	    for (int num_node = 0 ; num_node < noeuds.size() ; num_node++) {
+		float londiff = (noeuds.get(num_node).getLongitude() - lon) ;
+		float latdiff = (noeuds.get(num_node).getLatitude() - lat) ;
 		float dist = londiff*londiff + latdiff*latdiff ;
 		if (dist < minDist) {
 		    noeud = num_node ;
@@ -232,7 +235,7 @@ public class Graphe {
 	    System.out.println("Noeud le plus proche : " + noeud) ;
 	    System.out.println() ;
 	    dessin.setColor(java.awt.Color.red) ;
-	    dessin.drawPoint(noeuds[noeud].getLongitude(), noeuds[noeud].getLatitude(), 5) ;
+	    dessin.drawPoint(noeuds.get(noeud).getLongitude(), noeuds.get(noeud).getLatitude(), 5) ;
 	}
     }
 
@@ -277,7 +280,7 @@ public class Graphe {
 		current_zone = dis.readUnsignedByte() ;
 		current_node = Utils.read24bits(dis) ;
 		System.out.println(" --> " + current_zone + ":" + current_node) ;
-                c.addNoeud(noeuds[current_node]);
+                c.addNoeud(noeuds.get(current_node));
 	    }
 
 	    if ((current_zone != last_zone) || (current_node != last_node)) {
