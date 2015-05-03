@@ -11,7 +11,9 @@ public class Connexite extends Algo {
 	private int originePieton;
 	private int destination;
 	private float dureeMax;
-	private static int vitessePieton = Math.random() > 0.5 ? 25 : 50;
+	private float variationAuto;
+	private static boolean useBus = Math.random() > 0.5 ? true : false;
+	private static int vitessePieton = 25;
 			
     public Connexite(Graphe gr, PrintStream sortie, Readarg readarg) {
     	super(gr, sortie, readarg) ;
@@ -19,7 +21,7 @@ public class Connexite extends Algo {
     	originePieton = readarg.lireInt ("Numero du sommet d'origine du pieton ? ") ;
     	destination = readarg.lireInt ("Numero du sommet de destination ? ") ;
     	dureeMax = readarg.lireFloat ("Duree max de marche ? ") ;
-    	System.out.println(vitessePieton);
+    	variationAuto = readarg.lireFloat ("Variation max du temps de trajet de l'auto (en %) ? ") ;
     }
 
     public void run() {
@@ -29,28 +31,42 @@ public class Connexite extends Algo {
     	Label[] labelsAuto = DijPower(origineAuto,false);
     	Label[] labelsDestination = DijPower(destination,false);
     	
-    	float coutMin = 0;
+    	float normalTimeAuto = labelsAuto[destination].getCout();
+    	float maxTimeAuto = normalTimeAuto+normalTimeAuto*variationAuto/100;
+    	float coutMin = Float.MAX_VALUE;
     	int indexMin = 0;
+    	boolean okay = false;
     	
     	for (int i=0; i<graphe.getNoeuds().size(); i++) {
     		float cout =labelsPieton[i].getCout()+labelsAuto[i].getCout()+labelsDestination[i].getCout();
-    		if (i == 0 || cout<coutMin){
+    		if (cout<coutMin && labelsAuto[i].getCout()+labelsDestination[i].getCout() < maxTimeAuto){
     			coutMin = cout;
     			indexMin = i;
+    			okay = true;
 			}
 		}
     	
     	System.out.println("********************************************************************************************************************");
-    	System.out.println("Duree de l'operation : "+(System.currentTimeMillis() - startTime)+" ms");
-    	System.out.println("Duree a pieds (ou bus) du trajet pour le pieton : "+labelsPieton[indexMin].getCout()+" min");
-    	System.out.println("Duree totale du trajet pour le pieton : "+(labelsPieton[indexMin].getCout()+labelsDestination[indexMin].getCout())+" min");
-    	System.out.println("Duree totale du trajet pour l'automobiliste : "+(labelsAuto[indexMin].getCout()+labelsDestination[indexMin].getCout())+" min");
+    	if (useBus) {
+    		System.out.println("LE PIETON PREND lE BUS");
+    	} else {
+    		System.out.println("LE PIETON EST A PIED");
+    	}
+    	if (okay) {
+	    	System.out.println("Duree de l'operation : "+(System.currentTimeMillis() - startTime)+" ms");
+	    	System.out.println("Duree a pied (ou bus) du trajet pour le pieton : "+labelsPieton[indexMin].getCout()+" min");
+	    	System.out.println("Duree totale du trajet pour le pieton : "+(labelsPieton[indexMin].getCout()+labelsDestination[indexMin].getCout())+" min");
+	    	System.out.println("Duree totale du trajet pour l'automobiliste sans covoiturage : "+normalTimeAuto+" min");
+	    	float timeAuto = (labelsAuto[indexMin].getCout()+labelsDestination[indexMin].getCout());
+	    	System.out.println("Duree totale du trajet pour l'automobiliste : "+timeAuto+" min (+"+(timeAuto-normalTimeAuto)*100/normalTimeAuto+" %)");
+	    	
+	    	printChemin(origineAuto, indexMin, labelsAuto, Color.blue);
+	    	printChemin(originePieton, indexMin, labelsPieton, Color.green);
+	    	printChemin(destination, indexMin, labelsDestination, Color.pink);
+    	} else {
+    		System.out.println("Aucun covoiturage n'a ete trouve.");
+    	}
     	System.out.println("********************************************************************************************************************");
-    	
-    	getChemin(origineAuto, indexMin, labelsAuto, Color.blue);
-    	getChemin(originePieton, indexMin, labelsPieton, Color.green);
-    	getChemin(destination, indexMin, labelsDestination, Color.pink);
-    	
     }
     
     private Label[] DijPower(int origine, boolean isPieton) {
@@ -70,13 +86,13 @@ public class Connexite extends Algo {
     		if (label.getCout() < Float.MAX_VALUE) {
     			for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
     				Route route = label.getCourant().getRoutes().get(i);
-    				if (isPieton) {
+    				if (isPieton && !useBus) {
     					temps = route.getDescripteur().vitesseMax() >= 110 ? Float.MAX_VALUE : label.getCout()+60*route.getDistance()/(1000*vitessePieton);
     				} else {
     					temps = label.getCout()+60*route.getDistance()/(1000*route.getDescripteur().vitesseMax());
 					}
     				lebal = labels[route.getDestination().getId()];
-    				if (lebal.getCout() > temps && (!isPieton || temps <= dureeMax || vitessePieton == 50)) {
+    				if (lebal.getCout() > temps && (!isPieton || temps <= dureeMax || useBus)) {
     					lebal.setCout(temps);
     					lebal.setPere(label.getCourant());
     					heap.reorganizeFrom(lebal);
@@ -87,7 +103,7 @@ public class Connexite extends Algo {
     	return labels;
     }
     
-    public void getChemin(int origine,int destination, Label[] labels, Color col) {
+    public void printChemin(int origine,int destination, Label[] labels, Color col) {
     	Chemin chemin = new Chemin();
     	int e = destination;
 		while (e != origine) {
