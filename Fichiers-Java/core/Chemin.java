@@ -79,6 +79,7 @@ public class Chemin {
                 }
             }
             if (rMin != null) {
+            	dessin.setWidth(5);
             	dessin.setColor(col);
             	dessin.drawLine(rMin.getSource().getLongitude(), rMin.getSource().getLatitude(), rMin.getDestination().getLongitude(), rMin.getDestination().getLatitude());
             }
