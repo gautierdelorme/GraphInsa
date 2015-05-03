@@ -1,6 +1,7 @@
 package core ;
 
 import java.io.* ;
+
 import base.* ;
 
 /**
@@ -13,7 +14,7 @@ public abstract class Algo {
     
     protected Algo(Graphe gr, PrintStream fichierSortie, Readarg readarg) {
 	this.graphe = gr ;
-	this.sortie = fichierSortie ;	
+	this.sortie = fichierSortie ;
     }
     
     public abstract void run() ;

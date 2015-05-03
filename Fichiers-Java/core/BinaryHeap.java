@@ -197,7 +197,7 @@ public class BinaryHeap<E extends Comparable<E>> {
 	System.out.println() ;
 	}
 
-public void reorganizeSince(E e) {
+public void reorganizeFrom(E e) {
 	percolateUp(map.get(e));
 }
 

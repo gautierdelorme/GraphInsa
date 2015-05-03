@@ -65,6 +65,10 @@ public class Chemin {
     }
     
     public void trace(Dessin dessin) {
+    	trace(dessin, Color.blue);
+    }
+    
+    public void trace(Dessin dessin, Color col) {
     	for (int i = 0; i < noeuds.size()-1; i++) {            
             int min = Integer.MAX_VALUE;
             Route rMin = null;
@@ -75,7 +79,7 @@ public class Chemin {
                 }
             }
             if (rMin != null) {
-            	dessin.setColor(Color.blue);
+            	dessin.setColor(col);
             	dessin.drawLine(rMin.getSource().getLongitude(), rMin.getSource().getLatitude(), rMin.getDestination().getLongitude(), rMin.getDestination().getLatitude());
             }
         }
