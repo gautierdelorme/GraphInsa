@@ -14,6 +14,7 @@ public class Pcc extends Algo {
     
     protected Label[] labels;
     protected BinaryHeap<Label> heap;
+    public static boolean inTime ;
         
     public Pcc(Graphe gr, PrintStream sortie, Readarg readarg) {
 		super(gr, sortie, readarg) ;
@@ -23,6 +24,7 @@ public class Pcc extends Algo {
 		this.origine = readarg.lireInt ("Numero du sommet d'origine ? ") ;
 		this.zoneOrigine = gr.getZone () ;
 		this.destination = readarg.lireInt ("Numero du sommet destination ? ");
+		Pcc.inTime = readarg.lireInt ("En distance ou temps ? (0 ou 1)") == 0 ? false : true;
     }
 
     public void run() {
@@ -33,7 +35,7 @@ public class Pcc extends Algo {
     private void Dijkstra() {
     	long startTime = System.currentTimeMillis();
     	Label label, lebal;
-    	int nbMarques = 0, nbExplores = 0;
+    	int nbExplores = 0;
     	float cout;
     	for (int i = 0; i < labels.length; i++) {
     		labels[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
@@ -58,9 +60,13 @@ public class Pcc extends Algo {
 				}
 			}
 		}
-    	
     	long endTime = System.currentTimeMillis() - startTime;
+    	printResult(nbExplores, endTime);
+    }
+    
+    protected void printResult(int nbExplores, long endTime) {
     	System.out.println("********************************************************************************************************************");
+    	int nbMarques = 0;
     	if (labels[destination].getCout() != Float.POSITIVE_INFINITY) {
     		int e = destination;
     		System.out.print("Trajet le plus court (cout total en");
@@ -80,7 +86,10 @@ public class Pcc extends Algo {
     		chemin.addNoeudFirst(labels[e].getCourant());
     		chemin.trace(graphe.getDessin());
     		System.out.println();
-    		System.out.println("cout en temps du chemin : "+chemin.coutTemps());
+    		if (inTime)
+    			System.out.println("cout en min du chemin : "+chemin.coutTemps());
+    		else
+    			System.out.println("cout en m du chemin : "+chemin.coutDistance());
     	} else {
     		System.out.println("Les noeuds "+origine+" et "+destination+" ne sont pas relies !");
     	}

@@ -14,7 +14,7 @@ public class Label implements Comparable<Label> {
 		this.cout = cout;
 		this.pere = pere;
 		this.courant = courant;
-		this.estimation = Algo.inTime ? estimation/(1000*130/60) : estimation;
+		this.estimation = Pcc.inTime ? estimation/(1000*130/60) : estimation;
 	}
 	
 	
@@ -47,7 +47,7 @@ public class Label implements Comparable<Label> {
 
 
 	public void setEstimation(float estimation) {
-		this.estimation = Algo.inTime ? estimation/(1000*130/60) : estimation;
+		this.estimation = Pcc.inTime ? estimation/(1000*130/60) : estimation;
 	}
 
 	public void setEstimation(Noeud destination) {

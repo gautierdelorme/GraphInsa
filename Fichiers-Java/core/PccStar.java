@@ -18,7 +18,7 @@ public class PccStar extends Pcc {
     public void aStar() {
     	long startTime = System.currentTimeMillis();
     	Label label, lebal;
-    	int nbMarques = 0, nbExplores = 0;
+    	int nbExplores = 0;
     	float cout;
     	for (int i = 0; i < labels.length; i++) {
     		labels[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
@@ -47,33 +47,6 @@ public class PccStar extends Pcc {
     	}
     	
     	long endTime = System.currentTimeMillis() - startTime;
-    	System.out.println("********************************************************************************************************************");
-    	if (labels[destination].getCout() != Float.POSITIVE_INFINITY) {
-    		int e = destination;
-    		System.out.print("Trajet le plus court (cout total en");
-    		if (inTime)
-    			System.out.print(" min : ");
-    		else
-    			System.out.print(" m : ");
-    		System.out.print(labels[destination].getCout()+")"); // : "+labels[e].getCourant().getId());
-    		Chemin chemin = new Chemin();
-    		while (e != origine) {
-    			chemin.addNoeudFirst(labels[e].getCourant());
-    			labels[e].setMarquage(true);
-    			nbMarques++;
-    			//System.out.print(" <- "+labels[e].getPere().getId());
-    			e = labels[e].getPere().getId();
-    		}
-    		chemin.addNoeudFirst(labels[e].getCourant());
-    		chemin.trace(graphe.getDessin());
-    		System.out.println();
-    		System.out.println("cout en temps du chemin : "+chemin.coutTemps());
-    	} else {
-    		System.out.println("Les noeuds "+origine+" et "+destination+" ne sont pas relies !");
-    	}
-    	System.out.println("Nb explores : "+nbExplores);
-    	System.out.println("Nb marques : "+nbMarques);
-    	System.out.println("Duree de l'operation : "+(endTime)+" ms");
-    	System.out.println("********************************************************************************************************************");
+    	printResult(nbExplores, endTime);
     }
 }
