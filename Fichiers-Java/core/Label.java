@@ -50,7 +50,9 @@ public class Label implements Comparable<Label> {
 		this.estimation = Algo.inTime ? estimation/(1000*130/60) : estimation;
 	}
 
-
+	public void setEstimation(Noeud destination) {
+		setEstimation((float)Graphe.distance(courant.getLongitude(), courant.getLatitude(), destination.getLongitude(), destination.getLatitude()));
+	}
 
 	public Noeud getPere() {
 		return pere;

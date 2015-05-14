@@ -31,10 +31,7 @@ public class PccStar extends Pcc {
 			nbExplores++;
 			for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
 				Route route = label.getCourant().getRoutes().get(i);
-				if (inTime)
-					cout = label.getCout()+(60*route.getDistance()/(1000*route.getDescripteur().vitesseMax()));
-				else
-					cout = label.getCout()+route.getDistance();
+				cout = label.getCout()+(inTime ? (60*route.getDistance()/(1000*route.getDescripteur().vitesseMax())) : route.getDistance());
 				lebal = labels[route.getDestination().getId()];
 				if (lebal.getCout() > cout) {
 					lebal.setCout(cout);
@@ -42,12 +39,13 @@ public class PccStar extends Pcc {
 					if (heap.contains(lebal)) {
 						heap.reorganizeFrom(lebal);
 					} else {
-						lebal.setEstimation((float)Graphe.distance(lebal.getCourant().getLongitude(), lebal.getCourant().getLatitude(), graphe.getNoeuds().get(destination).getLongitude(), graphe.getNoeuds().get(destination).getLatitude()));
+						lebal.setEstimation(graphe.getNoeuds().get(destination));
 						heap.insert(lebal);
 					}
 				}
 			}
     	}
+    	
     	long endTime = System.currentTimeMillis() - startTime;
     	System.out.println("********************************************************************************************************************");
     	if (labels[destination].getCout() != Float.POSITIVE_INFINITY) {
