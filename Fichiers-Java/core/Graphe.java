@@ -99,8 +99,8 @@ public class Graphe {
 		descripteurs[num_descr] = new Descripteur(dis) ;
 
 		// On affiche quelques descripteurs parmi tous.
-		if (0 == num_descr % (1 + nb_descripteurs / 400))
-		    System.out.println("Descripteur " + num_descr + " = " + descripteurs[num_descr]) ;
+		//if (0 == num_descr % (1 + nb_descripteurs / 400))
+		  //  System.out.println("Descripteur " + num_descr + " = " + descripteurs[num_descr]) ;
 	    }
 	    
 	    Utils.checkByte(254, dis) ;

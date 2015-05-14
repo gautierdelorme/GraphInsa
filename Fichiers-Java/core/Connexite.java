@@ -33,13 +33,14 @@ public class Connexite extends Algo {
     	
     	float normalTimeAuto = labelsAuto[destination].getCout();
     	float maxTimeAuto = normalTimeAuto+normalTimeAuto*variationAuto/100;
-    	float coutMin = Float.MAX_VALUE;
+    	float coutMin = Float.POSITIVE_INFINITY;
     	int indexMin = 0;
     	boolean okay = false;
     	
     	for (int i=0; i<graphe.getNoeuds().size(); i++) {
     		float cout =labelsPieton[i].getCout()+labelsAuto[i].getCout()+labelsDestination[i].getCout();
-    		if (cout<coutMin && labelsAuto[i].getCout()+labelsDestination[i].getCout() < maxTimeAuto){
+    		float coutAuto = labelsAuto[i].getCout()+labelsDestination[i].getCout();
+    		if (cout<coutMin && coutAuto < maxTimeAuto){
     			coutMin = cout;
     			indexMin = i;
     			okay = true;
@@ -75,30 +76,29 @@ public class Connexite extends Algo {
     	Label label, lebal;
     	float temps;
     	for (int i = 0; i < labels.length; i++) {
-    		labels[i]= new Label(false, Float.MAX_VALUE, 0, null, graphe.getNoeuds().get(i)) ;
-    		if (i == origine) {
-    			labels[i].setCout(0);
-    		}
-    		heap.insert(labels[i]) ;
+    		labels[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
     	}
+    	labels[origine].setCout(0);
+		heap.insert(labels[origine]) ;
     	while (!heap.isEmpty()) {
     		label = heap.deleteMin();
-    		if (label.getCout() < Float.MAX_VALUE) {
-    			for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
-    				Route route = label.getCourant().getRoutes().get(i);
-    				if (isPieton && !useBus) {
-    					temps = route.getDescripteur().vitesseMax() >= 110 ? Float.MAX_VALUE : label.getCout()+60*route.getDistance()/(1000*vitessePieton);
-    				} else {
-    					temps = label.getCout()+60*route.getDistance()/(1000*route.getDescripteur().vitesseMax());
-					}
-    				lebal = labels[route.getDestination().getId()];
-    				if (lebal.getCout() > temps && (!isPieton || temps <= dureeMax || useBus)) {
-    					lebal.setCout(temps);
-    					lebal.setPere(label.getCourant());
-    					heap.reorganizeFrom(lebal);
-    				}
+			for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
+				Route route = label.getCourant().getRoutes().get(i);
+				if (isPieton && !useBus) {
+					temps = route.getDescripteur().vitesseMax() >= 110 ? Float.POSITIVE_INFINITY : label.getCout()+60*route.getDistance()/(1000*vitessePieton);
+				} else {
+					temps = label.getCout()+60*route.getDistance()/(1000*route.getDescripteur().vitesseMax());
 				}
-    		}
+				lebal = labels[route.getDestination().getId()];
+				if (lebal.getCout() > temps && (!isPieton || temps <= dureeMax || useBus)) {
+					lebal.setCout(temps);
+					lebal.setPere(label.getCourant());
+					if (heap.contains(lebal))
+						heap.reorganizeFrom(lebal);
+					else
+						heap.insert(lebal);
+				}
+			}
     	}
     	return labels;
     }

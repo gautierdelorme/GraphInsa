@@ -24,7 +24,7 @@ public class BinaryHeap<E extends Comparable<E>> {
  // Java genericity does not work with arrays.
  // We have to use an ArrayList
  private ArrayList<E> array; // The heap array
- HashMap<E,Integer> map = new HashMap<E,Integer>();
+ private HashMap<E,Integer> map;
 
  /**
   * Construct the binary heap.
@@ -32,12 +32,14 @@ public class BinaryHeap<E extends Comparable<E>> {
  public BinaryHeap() {
      this.currentSize = 0;
      this.array = new ArrayList<E>() ;
+     this.map = new HashMap<E,Integer>();
  }
 
  // Constructor used for debug.
  private BinaryHeap(BinaryHeap<E> heap) {
 	this.currentSize = heap.currentSize ;
 	this.array = new ArrayList<E>(heap.array) ;
+	this.map = new HashMap<E,Integer>();
  }
 
  // Sets an element in the array
@@ -155,6 +157,7 @@ public class BinaryHeap<E extends Comparable<E>> {
  public E deleteMin( ) {
      E minItem = findMin( );
 	E lastItem = this.array.get(--this.currentSize) ;
+	map.remove(minItem);
      this.arraySet(0, lastItem) ;
      this.percolateDown( 0 );
      return minItem;
@@ -199,6 +202,10 @@ public class BinaryHeap<E extends Comparable<E>> {
 
 public void reorganizeFrom(E e) {
 	percolateUp(map.get(e));
+}
+
+public boolean contains(E e) {
+	return map.containsKey(e);
 }
 
  

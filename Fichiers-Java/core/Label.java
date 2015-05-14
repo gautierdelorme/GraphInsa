@@ -14,7 +14,7 @@ public class Label implements Comparable<Label> {
 		this.cout = cout;
 		this.pere = pere;
 		this.courant = courant;
-		this.estimation = estimation;
+		this.estimation = Algo.inTime ? estimation/(1000*130/60) : estimation;
 	}
 	
 	
@@ -47,7 +47,7 @@ public class Label implements Comparable<Label> {
 
 
 	public void setEstimation(float estimation) {
-		this.estimation = estimation;
+		this.estimation = Algo.inTime ? estimation/(1000*130/60) : estimation;
 	}
 
 
@@ -78,9 +78,7 @@ public class Label implements Comparable<Label> {
 
 	@Override
 	public int compareTo(Label label) {
-		Double int1 = new Double(cout+estimation);
-		Double int2 = new Double(label.cout+label.estimation);
-		return int1.compareTo(int2);
+		return new Float((cout+estimation)).compareTo(new Float((label.cout+label.estimation)));
 	}
 	
 	@Override

@@ -8,6 +8,8 @@ import base.* ;
  * Classe abstraite representant un algorithme (connexite, plus court chemin, etc.)
  */
 public abstract class Algo {
+	
+	public static final boolean inTime = true;
 
     protected PrintStream sortie ;
     protected Graphe graphe ;
@@ -16,7 +18,7 @@ public abstract class Algo {
 	this.graphe = gr ;
 	this.sortie = fichierSortie ;
     }
-    
+
     public abstract void run() ;
 
 }
