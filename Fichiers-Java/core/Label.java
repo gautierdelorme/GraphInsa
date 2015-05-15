@@ -80,7 +80,7 @@ public class Label implements Comparable<Label> {
 
 	@Override
 	public int compareTo(Label label) {
-		return new Float((cout+estimation)).compareTo(new Float((label.cout+label.estimation)));
+		return (cout+estimation) - (label.cout+label.estimation) < 0 ? -1 : 1;
 	}
 	
 	@Override

@@ -24,7 +24,7 @@ public class Pcc extends Algo {
 		this.origine = readarg.lireInt ("Numero du sommet d'origine ? ") ;
 		this.zoneOrigine = gr.getZone () ;
 		this.destination = readarg.lireInt ("Numero du sommet destination ? ");
-		Pcc.inTime = readarg.lireInt ("En distance ou temps ? (0 ou 1)") == 0 ? false : true;
+		Pcc.inTime = (1 == readarg.lireInt ("En distance ou temps ? (0 ou 1) ? "));
     }
 
     public void run() {

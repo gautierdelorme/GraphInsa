@@ -59,7 +59,7 @@ public class Launch {
 	    Dessin dessin = (display) ? new DessinVisible(800,600) : new DessinInvisible() ;
 
 	    Graphe graphe = new Graphe(nomcarte, mapdata, dessin) ;
-            graphe.testMyShitMthrFckr();
+        graphe.perso();
 
 	    // Boucle principale : le menu est accessible 
 	    // jusqu'a ce que l'on quitte.

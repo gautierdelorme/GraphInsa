@@ -168,7 +168,7 @@ public class Graphe {
 
     }
     
-    public void testMyShitMthrFckr() {
+    public void perso() {
         System.out.println("Nombre de routes : "+Route.nbRoutes);
         System.out.println("Nombre de noeuds : "+Noeud.nbNoeuds);
         System.out.println("Distance totale des routes : "+Route.lgTotale+"m");
