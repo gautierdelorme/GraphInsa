@@ -12,13 +12,17 @@ public class PccStar extends Pcc {
 
     public void run() {
     	System.out.println("Run PCC-Star de " + zoneOrigine + ":" + origine + " vers " + zoneDestination + ":" + destination) ;
-		aStar();
+    	try {
+    		aStar();
+    	} catch( Exception e) {
+    		System.out.println("Un des noeuds n'appartiennt pas à la carte.");
+    	}
     }
     
     public void aStar() {
     	long startTime = System.currentTimeMillis();
     	Label label, lebal;
-    	int nbExplores = 0;
+    	int nbExplores = 0, maxElements = 0;
     	float cout;
     	for (int i = 0; i < labels.length; i++) {
     		labels[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
@@ -26,6 +30,7 @@ public class PccStar extends Pcc {
     	labels[origine].setCout(0);
     	heap.insert(labels[origine]);
     	while (!heap.isEmpty()) {
+    		maxElements = maxElements < heap.size() ? heap.size() : maxElements;
     		label = heap.deleteMin();
     		if (label.getCourant().getId() == destination) { break ;}
 			nbExplores++;
@@ -45,8 +50,7 @@ public class PccStar extends Pcc {
 				}
 			}
     	}
-    	
     	long endTime = System.currentTimeMillis() - startTime;
-    	printResult(nbExplores, endTime);
+    	printResult(nbExplores, maxElements, endTime);
     }
 }

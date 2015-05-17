@@ -29,13 +29,17 @@ public class Pcc extends Algo {
 
     public void run() {
     	System.out.println("Run PCC de " + zoneOrigine + ":" + origine + " vers " + zoneDestination + ":" + destination) ;	
-    	Dijkstra();
+    	try {
+    		Dijkstra();
+    	} catch( Exception e) {
+    		System.out.println("Un des noeuds n'appartiennt pas à la carte.");
+    	}
     }
     
     private void Dijkstra() {
     	long startTime = System.currentTimeMillis();
     	Label label, lebal;
-    	int nbExplores = 0;
+    	int nbExplores = 0, maxElements = 0;
     	float cout;
     	for (int i = 0; i < labels.length; i++) {
     		labels[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
@@ -43,6 +47,7 @@ public class Pcc extends Algo {
 		labels[origine].setCout(0);
 		heap.insert(labels[origine]) ;
     	while (!heap.isEmpty()) {
+    		maxElements = maxElements < heap.size() ? heap.size() : maxElements;
     		label = heap.deleteMin();
     		if (label.getCourant().getId() == destination) { break ;}
 			nbExplores++;
@@ -61,10 +66,10 @@ public class Pcc extends Algo {
 			}
 		}
     	long endTime = System.currentTimeMillis() - startTime;
-    	printResult(nbExplores, endTime);
+    	printResult(nbExplores, maxElements, endTime);
     }
     
-    protected void printResult(int nbExplores, long endTime) {
+    protected void printResult(int nbExplores, int maxElements, long endTime) {
     	System.out.println("********************************************************************************************************************");
     	int nbMarques = 0;
     	if (labels[destination].getCout() != Float.POSITIVE_INFINITY) {
@@ -95,6 +100,7 @@ public class Pcc extends Algo {
     	}
     	System.out.println("Nb explores : "+nbExplores);
     	System.out.println("Nb marques : "+nbMarques);
+    	System.out.println("Nb max de neouds dans l'arbre : "+maxElements);
     	System.out.println("Duree de l'operation : "+(endTime)+" ms");
     	System.out.println("********************************************************************************************************************");
     }

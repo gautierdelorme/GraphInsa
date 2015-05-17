@@ -44,8 +44,6 @@ public class Label implements Comparable<Label> {
 		return estimation;
 	}
 
-
-
 	public void setEstimation(float estimation) {
 		this.estimation = Pcc.inTime ? estimation/(1000*130/60) : estimation;
 	}
