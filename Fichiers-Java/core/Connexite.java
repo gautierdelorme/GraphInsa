@@ -13,7 +13,7 @@ public class Connexite extends Algo {
 	private float dureeMax;
 	private float variationAuto;
 	private static boolean useBus = Math.random() > 0.5 ? true : false;
-	private static int vitessePieton = 25;
+	private static int vitessePieton = 4;
 	
 	private float normalTimeAuto;
 	private float maxTimeAuto;
