@@ -79,8 +79,8 @@ public class Connexite extends Algo {
     		System.out.println("Aucun covoiturage n'a ete trouve.");
     	}
     	System.out.println("********************************************************************************************************************");
-    	
-    	*/System.out.println("********************************************************************************************************************");
+    	*/
+    	System.out.println("********************************************************************************************************************");
     	if (useBus) {
     		System.out.println("LE PIETON PREND lE BUS");
     	} else {
@@ -88,7 +88,7 @@ public class Connexite extends Algo {
     	}
     	nbExplores = 0;
     	long startTime = System.currentTimeMillis();
-    	int result = oldBest();
+    	int result = best();
     	long endTime = System.currentTimeMillis() - startTime;
     	System.out.println("Duree de l'operation : "+endTime+" ms");
     	System.out.println("Noeuds explores : "+nbExplores);
@@ -108,16 +108,64 @@ public class Connexite extends Algo {
     	System.out.println("********************************************************************************************************************");
     }
     
+    private int best() {
+    	normalTimeAuto = DijPower(origineAuto);
+    	maxTimeAuto = normalTimeAuto+normalTimeAuto*variationAuto/100;
+    	labelsAuto = new Label[graphe.getNoeuds().size()];
+    	labelsPieton = new Label[graphe.getNoeuds().size()];
+    	labelsDestination = new Label[graphe.getNoeuds().size()];
+    	heapAuto = new BinaryHeap<Label>() ;
+    	heapPieton = new BinaryHeap<Label>() ;
+    	heapDestination = new BinaryHeap<Label>() ;
+    	int returnValue = -1;
+    	for (int i = 0; i < graphe.getNoeuds().size(); i++) {
+    		labelsAuto[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
+    		labelsPieton[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
+    		labelsDestination[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
+    	}
+    	labelsAuto[origineAuto].setCout(0);
+    	labelsPieton[originePieton].setCout(0);
+    	labelsDestination[destination].setCout(0);
+    	heapAuto.insert(labelsAuto[origineAuto]);
+    	heapPieton.insert(labelsPieton[originePieton]);
+    	heapDestination.insert(labelsDestination[destination]);
+    	Label labelPieton = heapPieton.findMin(), labelAuto = heapAuto.findMin(), labelDestination = heapDestination.findMin();
+    	while (!heapAuto.isEmpty() || !heapPieton.isEmpty() || !heapDestination.isEmpty()) {
+    		labelPieton = getLabel(labelPieton, heapPieton, Color.MAGENTA);
+    		labelAuto = getLabel(labelAuto, heapAuto, Color.GREEN);
+    		labelDestination = getLabel(labelDestination, heapDestination, Color.RED);
+    		if (labelsAuto[labelPieton.getCourant().getId()].isMarquage() && labelsDestination[labelPieton.getCourant().getId()].isMarquage()) {
+    			returnValue = labelPieton.getCourant().getId();
+    			if (labelsAuto[returnValue].getCout()+labelsDestination[returnValue].getCout() < maxTimeAuto)
+    				break;
+    		} else if (labelsAuto[labelDestination.getCourant().getId()].isMarquage() && labelsPieton[labelDestination.getCourant().getId()].isMarquage()) {
+    			returnValue = labelDestination.getCourant().getId();
+    			if (labelsAuto[returnValue].getCout()+labelsDestination[returnValue].getCout() < maxTimeAuto)
+    				break;
+    		} else if (labelsPieton[labelAuto.getCourant().getId()].isMarquage() && labelsDestination[labelAuto.getCourant().getId()].isMarquage()) {
+    			returnValue = labelAuto.getCourant().getId();
+    			if (labelsAuto[returnValue].getCout()+labelsDestination[returnValue].getCout() < maxTimeAuto)
+    				break;
+    		} else {
+	    		boucle(labelPieton, heapPieton, labelsPieton, true);
+    			boucle(labelAuto, heapAuto, labelsAuto, false);
+    			boucle(labelDestination, heapDestination, labelsDestination, false);
+    		}
+    		returnValue = -1;
+    	}
+    	return returnValue;
+    }
+    
     private Label[] DijPower(int origine, boolean isPieton) {
     	if (origine == originePieton) {
     		System.out.println("Start Pieton !");
-			//graphe.getDessin().setColor(Color.MAGENTA);
+			graphe.getDessin().setColor(Color.MAGENTA);
     	} else if (origine == origineAuto) {
     		System.out.println("Start Auto !");
-			//graphe.getDessin().setColor(Color.GREEN);
+			graphe.getDessin().setColor(Color.GREEN);
     	} else {
     		System.out.println("Start Destination !");
-			//graphe.getDessin().setColor(Color.RED);
+			graphe.getDessin().setColor(Color.RED);
 		}
     	Label[] labels = new Label[graphe.getNoeuds().size()];
     	BinaryHeap<Label> heap = new BinaryHeap<Label>() ;
@@ -132,7 +180,7 @@ public class Connexite extends Algo {
     	while (!heap.isEmpty()) {
     		label = heap.deleteMin();
     		nbExplores++;
-    		//graphe.getDessin().drawPoint(label.getCourant().getLongitude(),label.getCourant().getLatitude(), 3);
+    		graphe.getDessin().drawPoint(label.getCourant().getLongitude(),label.getCourant().getLatitude(), 3);
 			for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
 				Route route = label.getCourant().getRoutes().get(i);
 				if (isPieton && !useBus) {
@@ -187,68 +235,6 @@ public class Connexite extends Algo {
     	return labels[destination].getCout();
     }
     
-    private Label[] DijPower2(int origine, int destination) {
-		//graphe.getDessin().setColor(Color.LIGHT_GRAY);
-    	Label[] labels = new Label[graphe.getNoeuds().size()];
-    	BinaryHeap<Label> heap = new BinaryHeap<Label>() ;
-    	Label label, lebal;
-    	float temps;
-    	for (int i = 0; i < labels.length; i++) {
-    		labels[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
-    	}
-    	labels[origine].setCout(0);
-		heap.insert(labels[origine]) ;
-		
-    	while (!heap.isEmpty()) {
-    		label = heap.deleteMin();
-    		label.setMarquage(true);
-    		nbExplores++;
-    		if (label.getCourant().getId() == destination) { break ;}
-    		//graphe.getDessin().drawPoint(label.getCourant().getLongitude(),label.getCourant().getLatitude(), 3);
-			for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
-				Route route = label.getCourant().getRoutes().get(i);
-				temps = label.getCout()+60*route.getDistance()/(1000*route.getDescripteur().vitesseMax());
-				lebal = labels[route.getDestination().getId()];
-				if (lebal.getCout() > temps) {
-					lebal.setCout(temps);
-					lebal.setPere(label.getCourant());
-					if (heap.contains(lebal))
-						heap.reorganizeFrom(lebal);
-					else
-						heap.insert(lebal);
-				}
-			}
-    	}
-    	return labels;
-    }
-    
-    private int Best() {
-    	labelsAuto = DijPower2(origineAuto, destination);
-    	labelsDestination = DijPower2(destination, destination);
-    	normalTimeAuto = labelsAuto[destination].getCout();
-    	maxTimeAuto = normalTimeAuto+normalTimeAuto*variationAuto/100;
-    	labelsPieton = new Label[graphe.getNoeuds().size()];
-    	heapPieton = new BinaryHeap<Label>() ;
-    	int returnValue = -1;
-    	int meetingPoint = -1;
-    	for (int i = 0; i < graphe.getNoeuds().size(); i++) {
-    		labelsPieton[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
-    	}
-    	labelsPieton[originePieton].setCout(0);
-    	heapPieton.insert(labelsPieton[originePieton]);
-    	Label labelPieton = heapPieton.findMin();
-    	while (!heapPieton.isEmpty()) {
-    		labelPieton = getLabel(labelPieton, heapPieton, Color.MAGENTA);
-    		meetingPoint = labelPieton.getCourant().getId();
-    		if (labelsAuto[meetingPoint].isMarquage() && labelsDestination[destination].getCout()+labelsAuto[meetingPoint].getCout() <= maxTimeAuto) {
-    			returnValue = labelPieton.getCourant().getId();
-	    		break;
-    		}
-    		boucle(labelPieton, heapPieton, labelsPieton, true);
-    	}
-    	return returnValue;
-    }
-    
     private Label getLabel(Label label, BinaryHeap<Label> heap, Color color) {
     	if (!heap.isEmpty()) {
     		nbExplores++;
@@ -291,54 +277,5 @@ public class Connexite extends Algo {
 		}
 		chemin.addNoeudFirst(labels[e].getCourant());
 		chemin.trace(graphe.getDessin(),col);
-    }
-    
-    
-     private int oldBest() {
-    	normalTimeAuto = DijPower(origineAuto);
-    	maxTimeAuto = normalTimeAuto+normalTimeAuto*variationAuto/100;
-    	labelsAuto = new Label[graphe.getNoeuds().size()];
-    	labelsPieton = new Label[graphe.getNoeuds().size()];
-    	labelsDestination = new Label[graphe.getNoeuds().size()];
-    	heapAuto = new BinaryHeap<Label>() ;
-    	heapPieton = new BinaryHeap<Label>() ;
-    	heapDestination = new BinaryHeap<Label>() ;
-    	int returnValue = -1;
-    	for (int i = 0; i < graphe.getNoeuds().size(); i++) {
-    		labelsAuto[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
-    		labelsPieton[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
-    		labelsDestination[i]= new Label(false, Float.POSITIVE_INFINITY, 0, null, graphe.getNoeuds().get(i)) ;
-    	}
-    	labelsAuto[origineAuto].setCout(0);
-    	labelsPieton[originePieton].setCout(0);
-    	labelsDestination[destination].setCout(0);
-    	heapAuto.insert(labelsAuto[origineAuto]);
-    	heapPieton.insert(labelsPieton[originePieton]);
-    	heapDestination.insert(labelsDestination[destination]);
-    	Label labelPieton = heapPieton.findMin(), labelAuto = heapAuto.findMin(), labelDestination = heapDestination.findMin();
-    	while (!heapAuto.isEmpty() || !heapPieton.isEmpty() || !heapDestination.isEmpty()) {
-    		labelPieton = getLabel(labelPieton, heapPieton, Color.MAGENTA);
-    		labelAuto = getLabel(labelAuto, heapAuto, Color.GREEN);
-    		labelDestination = getLabel(labelDestination, heapDestination, Color.RED);
-    		if (labelsAuto[labelPieton.getCourant().getId()].isMarquage() && labelsDestination[labelPieton.getCourant().getId()].isMarquage()) {
-    			returnValue = labelPieton.getCourant().getId();
-    			if (labelsAuto[returnValue].getCout()+labelsDestination[returnValue].getCout() < maxTimeAuto)
-    				break;
-    		} else if (labelsAuto[labelDestination.getCourant().getId()].isMarquage() && labelsPieton[labelDestination.getCourant().getId()].isMarquage()) {
-    			returnValue = labelDestination.getCourant().getId();
-    			if (labelsAuto[returnValue].getCout()+labelsDestination[returnValue].getCout() < maxTimeAuto)
-    				break;
-    		} else if (labelsPieton[labelAuto.getCourant().getId()].isMarquage() && labelsDestination[labelAuto.getCourant().getId()].isMarquage()) {
-    			returnValue = labelAuto.getCourant().getId();
-    			if (labelsAuto[returnValue].getCout()+labelsDestination[returnValue].getCout() < maxTimeAuto)
-    				break;
-    		} else {
-	    		boucle(labelPieton, heapPieton, labelsPieton, true);
-    			boucle(labelAuto, heapAuto, labelsAuto, false);
-    			boucle(labelDestination, heapDestination, labelsDestination, false);
-    		}
-    		returnValue = -1;
-    	}
-    	return returnValue;
     }
 }
