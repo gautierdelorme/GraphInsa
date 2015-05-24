@@ -12,6 +12,7 @@ public class Noeud {
     private float latitude;
     private int nbSuccesseurs;
     private ArrayList<Route> routes;
+    private ArrayList<Route> routesReverse;
     private int id;
     
     public static int nbNoeuds = 0;
@@ -22,11 +23,16 @@ public class Noeud {
         this.latitude = latitude;
         this.nbSuccesseurs = nbSuccesseurs;
         routes = new ArrayList<Route>();
+        routesReverse = new ArrayList<Route>();
         nbNoeuds++;
     }
     
     private boolean routeIsExist(Route r) {
         return routes.contains(r);
+    }
+    
+    private boolean routeReverseIsExist(Route r) {
+        return routesReverse.contains(r);
     }
 
     public void addRoute(Route route) {
@@ -36,6 +42,15 @@ public class Noeud {
     
     public ArrayList<Route> getRoutes() {
         return routes;
+    }
+    
+    public void addRouteReverse(Route route) {
+        if (!routeReverseIsExist(route))
+            routesReverse.add(route);
+    }
+    
+    public ArrayList<Route> getRoutesReverse() {
+        return routesReverse;
     }
     
     public int getId() {

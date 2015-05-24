@@ -127,12 +127,16 @@ public class Graphe {
 		    edges++ ;
 		    if (succ_zone == numzone) {
                     Route r = new Route(noeuds.get(num_node),noeuds.get(dest_node), longueur, nb_segm, descripteurs[descr_num]);
+                    Route rr = new Route(noeuds.get(dest_node),noeuds.get(num_node), longueur, nb_segm, descripteurs[descr_num]);
                     routes.add(r);
                     noeuds.get(num_node).addRoute(r);
+                    noeuds.get(dest_node).addRouteReverse(rr);
                     if (!descripteurs[descr_num].isSensUnique()) {
-                            noeuds.get(dest_node).setNbSuccesseurs(noeuds.get(dest_node).getNbSuccesseurs()+1);
-                            noeuds.get(dest_node).addRoute(new Route(noeuds.get(dest_node),noeuds.get(num_node), longueur, nb_segm, descripteurs[descr_num]));
+                    	noeuds.get(dest_node).addRoute(rr);
+                    	noeuds.get(num_node).addRouteReverse(r);
+                        noeuds.get(dest_node).setNbSuccesseurs(noeuds.get(dest_node).getNbSuccesseurs()+1);
                     }
+                    
 		    Couleur.set(dessin, descripteurs[descr_num].getType()) ;
 
 		    float current_long = noeuds.get(num_node).getLongitude() ;

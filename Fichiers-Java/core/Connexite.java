@@ -2,6 +2,7 @@ package core ;
 
 import java.awt.Color;
 import java.io.* ;
+import java.util.*;
 
 import base.Readarg ;
 
@@ -36,16 +37,15 @@ public class Connexite extends Algo {
 
     public void run() {
     	/*long startTime = System.currentTimeMillis();
-    	labelsPieton = DijPower(originePieton,true);
-    	labelsAuto = DijPower(origineAuto,false);
-    	labelsDestination = DijPower(destination,false);
+    	labelsPieton = DijPower1(originePieton);
+    	labelsAuto = DijPower1(origineAuto);
+    	labelsDestination = DijPower1(destination);
     	
     	normalTimeAuto = labelsAuto[destination].getCout();
     	maxTimeAuto = normalTimeAuto+normalTimeAuto*variationAuto/100;
     	float coutMin = Float.POSITIVE_INFINITY;
     	int indexMin = 0;
     	boolean okay = false;
-    	
     	for (int i=0; i<graphe.getNoeuds().size(); i++) {
     		float cout =labelsPieton[i].getCout()+labelsAuto[i].getCout()+labelsDestination[i].getCout();
     		float coutAuto = labelsAuto[i].getCout()+labelsDestination[i].getCout();
@@ -74,7 +74,7 @@ public class Connexite extends Algo {
 	    	
 	    	printChemin(origineAuto, indexMin, labelsAuto, Color.blue);
 	    	printChemin(originePieton, indexMin, labelsPieton, Color.green);
-	    	printChemin(destination, indexMin, labelsDestination, Color.pink);
+	    	printCheminReverse(destination, indexMin, labelsDestination, Color.pink);
     	} else {
     		System.out.println("Aucun covoiturage n'a ete trouve.");
     	}
@@ -100,8 +100,7 @@ public class Connexite extends Algo {
 	    	System.out.println("Duree totale du trajet pour l'automobiliste : "+timeAuto+" min (+"+(timeAuto-normalTimeAuto)*100/normalTimeAuto+" %)");
 	    	printChemin(origineAuto, result, labelsAuto, Color.BLACK);
 	    	printChemin(originePieton, result, labelsPieton, Color.BLUE);
-	    	//printChemin(result, destination, labelsDestination, Color.ORANGE);
-	    	printChemin(destination, result, labelsDestination, Color.ORANGE);
+	    	printCheminReverse(destination, result, labelsDestination, Color.ORANGE);
     	} else {
     		System.out.println("Aucun covoiturage n'a ete trouve.");
     	}
@@ -147,17 +146,19 @@ public class Connexite extends Algo {
     			if (labelsAuto[returnValue].getCout()+labelsDestination[returnValue].getCout() < maxTimeAuto)
     				break;
     		} else {
-	    		boucle(labelPieton, heapPieton, labelsPieton, true);
-    			boucle(labelAuto, heapAuto, labelsAuto, false);
-    			boucle(labelDestination, heapDestination, labelsDestination, false);
+	    		boucle(labelPieton, heapPieton, labelsPieton, originePieton);
+    			boucle(labelAuto, heapAuto, labelsAuto, origineAuto);
+    			boucle(labelDestination, heapDestination, labelsDestination, destination);
     		}
     		returnValue = -1;
     	}
     	return returnValue;
     }
     
-    private Label[] DijPower(int origine, boolean isPieton) {
-    	if (origine == originePieton) {
+    private Label[] DijPower1(int origine) {
+    	boolean isPieton = (origine == originePieton);
+    	boolean isDestination = (origine == destination);
+    	if (isPieton) {
     		System.out.println("Start Pieton !");
 			graphe.getDessin().setColor(Color.MAGENTA);
     	} else if (origine == origineAuto) {
@@ -176,13 +177,12 @@ public class Connexite extends Algo {
     	}
     	labels[origine].setCout(0);
 		heap.insert(labels[origine]) ;
-		
     	while (!heap.isEmpty()) {
     		label = heap.deleteMin();
     		nbExplores++;
     		graphe.getDessin().drawPoint(label.getCourant().getLongitude(),label.getCourant().getLatitude(), 3);
-			for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
-				Route route = label.getCourant().getRoutes().get(i);
+    		ArrayList<Route> routes = isDestination ? label.getCourant().getRoutesReverse() : label.getCourant().getRoutes();
+			for (Route route : routes) {
 				if (isPieton && !useBus) {
 					temps = route.getDescripteur().vitesseMax() >= 110 ? Float.POSITIVE_INFINITY : label.getCout()+60*route.getDistance()/(1000*vitessePieton);
 				} else {
@@ -246,11 +246,13 @@ public class Connexite extends Algo {
     	return label;
     }
     
-    private void boucle(Label label, BinaryHeap<Label> heap, Label[] labels, boolean isPieton) {
+    private void boucle(Label label, BinaryHeap<Label> heap, Label[] labels, int origine) {
+    	boolean isPieton = (origine == originePieton);
+    	boolean isDestination = (origine == destination);
     	Label lebal;
     	float temps;
-    	for (int i = 0; i < label.getCourant().getNbSuccesseurs(); i++) {
-			Route route = label.getCourant().getRoutes().get(i);
+    	ArrayList<Route> routes = isDestination ? label.getCourant().getRoutesReverse() : label.getCourant().getRoutes();
+		for (Route route : routes) {
 			if (isPieton && !useBus) {
 				temps = route.getDescripteur().vitesseMax() >= 110 ? Float.POSITIVE_INFINITY : label.getCout()+60*route.getDistance()/(1000*vitessePieton);
 			} else {
@@ -276,6 +278,17 @@ public class Connexite extends Algo {
 			e = labels[e].getPere().getId();
 		}
 		chemin.addNoeudFirst(labels[e].getCourant());
+		chemin.trace(graphe.getDessin(),col);
+    }
+    
+    public void printCheminReverse(int origine,int destination, Label[] labels, Color col) {
+    	Chemin chemin = new Chemin();
+    	int e = destination;
+		while (e != origine) {
+			chemin.addNoeud(labels[e].getCourant());
+			e = labels[e].getPere().getId();
+		}
+		chemin.addNoeud(labels[e].getCourant());
 		chemin.trace(graphe.getDessin(),col);
     }
 }
