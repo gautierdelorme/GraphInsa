@@ -37,7 +37,6 @@ public class Graphe {
      * Ces attributs constituent une structure ad-hoc pour stocker les informations du graphe.
      * Vous devez modifier et ameliorer ce choix de conception simpliste.
      */
-    private ArrayList<Route> routes ;
     private ArrayList<Noeud> noeuds ;
 
     // Deux malheureux getters.
@@ -45,7 +44,6 @@ public class Graphe {
     public int getZone() { return numzone ; }
     
     public ArrayList<Noeud> getNoeuds() { return noeuds; }
-    public ArrayList<Route> getRoutes() { return routes; }
 
     // Le constructeur cree le graphe en lisant les donnees depuis le DataInputStream
     public Graphe (String nomCarte, DataInputStream dis, Dessin dessin) {
@@ -79,7 +77,6 @@ public class Graphe {
 	    
 	    // En fonction de vos choix de conception, vous devrez certainement adapter la suite.
             this.noeuds = new ArrayList<Noeud>() ;//new Noeud[nb_nodes];
-	    this.routes = new ArrayList<Route>();
             
             // Nombre de successeurs enregistrÃ©s dans le fichier.
 	    int[] nsuccesseurs_a_lire = new int[nb_nodes] ;
@@ -128,7 +125,6 @@ public class Graphe {
 		    if (succ_zone == numzone) {
                     Route r = new Route(noeuds.get(num_node),noeuds.get(dest_node), longueur, nb_segm, descripteurs[descr_num]);
                     Route rr = new Route(noeuds.get(dest_node),noeuds.get(num_node), longueur, nb_segm, descripteurs[descr_num]);
-                    routes.add(r);
                     noeuds.get(num_node).addRoute(r);
                     noeuds.get(dest_node).addRouteReverse(rr);
                     if (!descripteurs[descr_num].isSensUnique()) {
@@ -153,9 +149,7 @@ public class Graphe {
 		    
 		    // Le dernier trait rejoint le sommet destination.
 		    // On le dessine si le noeud destination est dans la zone du graphe courant.
-		    if (succ_zone == numzone) {
 			dessin.drawLine(current_long, current_lat, noeuds.get(dest_node).getLongitude(), noeuds.get(dest_node).getLatitude()) ;
-		    }
 		    }
 		}
 	    }

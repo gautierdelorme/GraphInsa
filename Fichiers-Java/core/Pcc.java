@@ -79,13 +79,12 @@ public class Pcc extends Algo {
     			System.out.print(" min : ");
     		else
     			System.out.print(" m : ");
-    		System.out.print(labels[destination].getCout()+")");// : "+labels[e].getCourant().getId());
+    		System.out.print(labels[destination].getCout()+")");
     		Chemin chemin = new Chemin();
     		while (e != origine) {
     			chemin.addNoeudFirst(labels[e].getCourant());
     			labels[e].setMarquage(true);
     			nbMarques++;
-    			//System.out.print(" <- "+labels[e].getPere().getId());
     			e = labels[e].getPere().getId();
     		}
     		chemin.addNoeudFirst(labels[e].getCourant());
