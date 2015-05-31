@@ -139,7 +139,7 @@ public class Connexite extends Algo {
     	if (isPieton) {
     		color = Color.MAGENTA;
     	} else if (isAuto) {
-    		color = Color.GREEN;
+    		color = Color.lightGray;
     	} else {
     		color = Color.RED;
 		}
